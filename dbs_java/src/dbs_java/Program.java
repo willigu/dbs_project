@@ -1,9 +1,17 @@
 package dbs_java;
 
 public class Program {
-
+	private static DbBridge dbBridge;
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		
+		dbBridge = new DbBridge();
+		
+		// customize bridge settings
+		
+		dbBridge.connect();
+		
+		// Import the stuff from the txt file
+		
+		dbBridge.close();
 	}
 }
