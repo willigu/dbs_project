@@ -1,0 +1,36 @@
+Änderungen bezüglich Genre-Film Relation!
+
+CREATE TABLE IF NOT EXISTS Actors (
+	ActorId SERIAL NOT NULL PRIMARY KEY,
+	ActorName varchar(50) NOT NULL
+	);
+
+CREATE TABLE IF NOT EXISTS Directors (
+	DirId SERIAL NOT NULL,
+	DirName varchar(50) NOT NULL
+	);
+
+CREATE TABLE IF NOT EXISTS Films (
+	FilmId SERIAL NOT NULL PRIMARY KEY,
+	FilmTitle varchar(255) NOT NULL,
+	ReleaseYear timestamp NULL DEFAULT NULL,
+	Rating numeric,
+	Length integer
+	);
+
+CREATE TABLE IF NOT EXISTS Genres (
+	GenreId SERIAL NOT NULL PRIMARY KEY,
+	GenreName varchar(128) NOT NULL
+	);
+
+CREATE TABLE IF NOT EXISTS Filmgenres (
+	EntryId SERIAL NOT NULL PRIMARY KEY,
+	FilmId integer NOT NULL REFERENCES Films,
+	GenreId integer NOT NULL REFERENCES Genres
+	);
+
+CREATE TABLE IF NOT EXISTS Filmcasts (
+	EntryId SERIAL NOT NULL PRIMARY KEY,
+	FilmId integer NOT NULL REFERENCES Films,
+	ActorId integer NOT NULL REFERENCES Actors
+	);

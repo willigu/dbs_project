@@ -1,16 +1,17 @@
 package dbs_java;
 
 public class Program {
-	private static DbBridge dbBridge;
 	public static void main(String[] args) {
 		
-		dbBridge = new DbBridge();
+		DbBridge dbBridge = new DbBridge();
 		
 		// customize bridge settings
 		
 		dbBridge.connect();
 		
 		// Import the stuff from the txt file
+		insert_data id = new insert_data(dbBridge);
+		id.import_data();
 		
 		dbBridge.close();
 	}
