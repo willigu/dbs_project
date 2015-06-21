@@ -18,9 +18,9 @@ public class insert_data {
 	private PreparedStatement SelectActorId;
 	
 	//using HashSets to quickly find, if a Actor/Genre/Director is already in db when importing a film
-	HashSet<String> hsActor = new HashSet<String>();
-	HashSet<String> hsGenre = new HashSet<String>();
-	HashSet<String> hsDirectors = new HashSet<String>();
+	private HashSet<String> hsActor = new HashSet<String>();
+	private HashSet<String> hsGenre = new HashSet<String>();
+	private HashSet<String> hsDirectors = new HashSet<String>();
 	
 	public insert_data(DbBridge dbBridge) throws SQLException {
 		//using prepared statements to counter sql-injections
