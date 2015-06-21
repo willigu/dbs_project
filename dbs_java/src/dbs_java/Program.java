@@ -1,5 +1,7 @@
 package dbs_java;
 
+import java.sql.SQLException;
+
 public class Program {
 	public static void main(String[] args) {
 		
@@ -10,8 +12,14 @@ public class Program {
 		dbBridge.connect();
 		
 		// Import the stuff from the txt file
-		insert_data id = new insert_data(dbBridge);
-		id.import_data();
+		try {
+			insert_data id = new insert_data(dbBridge);
+			id.import_data();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		dbBridge.close();
 	}

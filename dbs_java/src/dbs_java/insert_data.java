@@ -17,13 +17,13 @@ public class insert_data {
 	private PreparedStatement SelectGenreId;
 	private PreparedStatement SelectActorId;
 	
-	private DbBridge dbBridge;
+	//using HashSets to quickly find, if a Actor/Genre/Director is already in db when importing a film
 	HashSet<String> hsActor = new HashSet<String>();
 	HashSet<String> hsGenre = new HashSet<String>();
 	HashSet<String> hsDirectors = new HashSet<String>();
 	
 	public insert_data(DbBridge dbBridge) throws SQLException {
-		this.dbBridge = dbBridge;
+		//using prepared statements to counter sql-injections
 		this.stateActors = dbBridge.dbConnection.prepareStatement("INSERT INTO Actors (ActorName) VALUES (?);");
 		this.stateGenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Genres (Genre) VALUES (?);");
 		this.stateDirectors = dbBridge.dbConnection.prepareStatement("INSERT INTO Directors (Dirname) VALUES (?);");
@@ -35,6 +35,7 @@ public class insert_data {
 		PreparedStatement SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT Dirname FROM Directors;");
 		this.SelectGenreId = dbBridge.dbConnection.prepareStatement("SELECT GenreId FROM Genres WHERE GenreName=?;");
 		this.SelectActorId = dbBridge.dbConnection.prepareStatement("SELECT ActorId FROM Actors WHERE ActorName=?;");
+		
 		ResultSet rs = SelectActors.executeQuery();
 		while(rs.next()) {
 			hsActor.add(rs.getString(1));
@@ -53,45 +54,33 @@ public class insert_data {
 	}
 	
 	public void import_data() {
+		//maybe changed in the future to add filenames
 		String File ="./data/imdb_top100t_2015-06-18.csv";
 		BufferedReader buffer = null;
 		String zeile = "";
 		String SplitChar ="	";
 		
-		
 		try {
 			buffer = new BufferedReader(new FileReader(File));
-			
 			while ((zeile = buffer.readLine()) != null) {
-	 
 				String[] film = zeile.split(SplitChar);
 				
+				//to save films in the film class
 				film f = new film(film);
 				
+				//adding all Actors to the Actors table who aren't in there already
 				for (String Actor:f.actors) {
 					actor_import(Actor);
 				}
 				
+				//same as for Actors
 				for (String Genre:f.genres) {
 					genre_import(Genre);
 				}
 				
-				
 				directors_import(film[6]);
 				
 				film_import(f);
-				/*
-				 * film[0] IMDB ID
-				 * film[1] Filmtitel
-				 * film[2] Jahr
-				 * film[3] Wertung
-				 * film[4] ?
-				 * film[5] Länge
-				 * film[6] Regisseur
-				 * film[7] Actors
-				 * film[8] Genres
-				 * 
-				 */
 			}
 	 
 		} catch (FileNotFoundException e) {
@@ -145,6 +134,7 @@ public class insert_data {
 	}
 	
 	public void film_import(film f) throws SQLException {
+		// Actors/Genres shouldve been imported already!
 		stateFilms.setString(1,f.title);
 		stateFilms.setInt(2,f.year);
 		stateFilms.setFloat(3,f.rating);
@@ -158,19 +148,26 @@ public class insert_data {
 	public void filmgenres_import(film f) throws SQLException {
 		for (String genre:f.genres) {
 			stateFilmgenres.setInt(1, f.id);
+			
+			//Select GenreId to save as referred value
 			SelectGenreId.setString(1,genre);
 			ResultSet res = SelectGenreId.executeQuery();
 			res.next();
+			
 			stateFilmgenres.setInt(2, res.getInt(1));
 			stateFilmgenres.execute();
 		}
 	}
+	
 	public void filmcasts_import(film f) throws SQLException {
 		for (String actor:f.actors) {
 			stateFilmcasts.setInt(1, f.id);
+			
+			//Select ActorId to save as referred value
 			SelectActorId.setString(1, actor);
 			ResultSet res = SelectActorId.executeQuery();
 			res.next();
+			
 			stateFilmcasts.setInt(2, res.getInt(1));
 			stateFilmcasts.execute();
 		}

@@ -30,8 +30,5 @@ public class film {
 		this.director = film[6];
 		this.actors = film[7].split("|");
 		this.genres = film[8].split("|");
-		
-		
-		
 	}
 }
