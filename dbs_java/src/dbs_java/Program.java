@@ -16,6 +16,9 @@ public class Program {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		
+		// to create a config.conf file uncomment the following code (DONT PUSH THE PASSWORD!)
 		/*
 		properties.setProperty("server", "comm.epow0.org");
 		properties.setProperty("port", "5432");
@@ -30,6 +33,7 @@ public class Program {
 			e1.printStackTrace();
 		}
 		*/
+		
 		DbBridge dbBridge = new DbBridge(properties);
 		
 		// customize bridge settings
