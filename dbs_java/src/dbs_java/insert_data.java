@@ -25,8 +25,8 @@ public class insert_data {
 	public insert_data(DbBridge dbBridge) throws SQLException {
 		//using prepared statements to counter sql-injections
 		this.stateActors = dbBridge.dbConnection.prepareStatement("INSERT INTO Actors (ActorName) VALUES (?);");
-		this.stateGenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Genres (Genre) VALUES (?);");
-		this.stateDirectors = dbBridge.dbConnection.prepareStatement("INSERT INTO Directors (Dirname) VALUES (?);");
+		this.stateGenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Genres (GenreName) VALUES (?);");
+		this.stateDirectors = dbBridge.dbConnection.prepareStatement("INSERT INTO Directors (DirName) VALUES (?);");
 		this.stateFilms = dbBridge.dbConnection.prepareStatement("INSERT INTO Films (FilmTitle, ReleaseYear, Rating, Length) VALUES (?,?,?,?) RETURNING FilmId;");
 		this.stateFilmgenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Filmgenres (FilmId,GenreId) VALUES (?,?);");
 		this.stateFilmcasts = dbBridge.dbConnection.prepareStatement("INSERT INTO Filmcasts (FilmId,ActorId) VALUES (?,?);"); 
@@ -53,17 +53,16 @@ public class insert_data {
 		rs.close();
 	}
 	
-	public void import_data() {
+	public void import_data(String filename) {
 		//maybe changed in the future to add filenames
-		String File ="./data/imdb_top100t_2015-06-18.csv";
+		
 		BufferedReader buffer = null;
 		String zeile = "";
-		String SplitChar ="	";
 		
 		try {
-			buffer = new BufferedReader(new FileReader(File));
+			buffer = new BufferedReader(new FileReader(filename));
 			while ((zeile = buffer.readLine()) != null) {
-				String[] film = zeile.split(SplitChar);
+				String[] film = zeile.split("	");
 				
 				//to save films in the film class
 				film f = new film(film);
@@ -140,6 +139,7 @@ public class insert_data {
 		stateFilms.setFloat(3,f.rating);
 		stateFilms.setInt(4,f.length);
 		ResultSet res = stateFilms.executeQuery();
+		res.next();
 		f.id = res.getInt(1);
 		filmgenres_import(f);
 		filmcasts_import(f);

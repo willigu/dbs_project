@@ -9,28 +9,27 @@ import java.util.Properties;
  *
  */
 public class DbBridge {
-	String strServer, strPort, strDBName, strURL;
-	String strUsername, strPwd;
+	private String strServer, strPort, strDBName;
+	private String strUsername, strPwd;
 	Connection dbConnection;
-	String strLastQuery;
 	/**
 	 * Create a new bridge instance with default values
 	 */
-	public DbBridge(){
+	public DbBridge(Properties properties){
 		try {
 			
-			// load DB driver fro external JAR
+			// load DB driver from external JAR
 			Class.forName("org.postgresql.Driver");
-			this.strServer = "localhost";
-			this.strPort = "15432";
-			this.strDBName = "dbs_project";
+			
+			this.strServer = properties.getProperty("server");
+			this.strPort = properties.getProperty("port");
+			this.strUsername = properties.getProperty("username");
+			this.strPwd = properties.getProperty("pwd");
+			this.strDBName = properties.getProperty("dbname");
+			
 		} catch (ClassNotFoundException e) {
 			System.out.println("Error: Database driver could not be loaded!");
 		}
-	}
-	
-	public void setPort(String port){
-		this.strPort = port;
 	}
 	
 	public String getPort(){
@@ -41,33 +40,14 @@ public class DbBridge {
 		return this.strServer;
 	}
 	
-	public void setServer(String server){
-		this.strServer = server;
-	}
-	
-	public void setUsername(String name){
-		this.strUsername = name;
-	}
-	
-	public void setPassword(String pwd){
-		this.strPwd = pwd;
-	}
-	
-	public void setDbName(String name){
-		this.strDBName = name;
-	}
-	
 	/**
 	 * Connects to the database 
 	 * @return true, if connecting process was successfull
 	 */
 	public boolean connect(){
 		String url = "jdbc:postgresql://" + this.strServer + ":" + this.strPort + "/" + this.strDBName;
-		Properties props = new Properties();
-		props.setProperty("user",this.strUsername);
-		props.setProperty("password",this.strPwd);
 		try {
-			this.dbConnection =  DriverManager.getConnection(url, props);
+			this.dbConnection =  DriverManager.getConnection(url,strUsername,strPwd);
 		} catch (SQLException e) {
 			System.out.println("Error: could not connect to the database using the given data.");
 			return false;

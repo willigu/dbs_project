@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Directors (
 CREATE TABLE IF NOT EXISTS Films (
 	FilmId SERIAL NOT NULL PRIMARY KEY,
 	FilmTitle varchar(255) NOT NULL,
-	ReleaseYear timestamp NULL DEFAULT NULL,
+	ReleaseYear integer NULL DEFAULT NULL,
 	Rating numeric,
 	Length integer
 	);

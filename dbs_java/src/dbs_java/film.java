@@ -28,7 +28,8 @@ public class film {
 		this.rating = Float.parseFloat(film[3]);
 		this.length = Integer.parseInt(film[5].split(" ")[0]);
 		this.director = film[6];
-		this.actors = film[7].split("|");
-		this.genres = film[8].split("|");
+		
+		this.actors = film[7].split("\\|");
+		this.genres = film[8].split("\\|");
 	}
 }
