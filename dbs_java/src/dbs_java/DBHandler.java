@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.sql.*;
 
-public class insert_data {
+public class DBHandler {
 	private PreparedStatement stateActors;
 	private PreparedStatement stateGenres;
 	private PreparedStatement stateDirectors;
@@ -22,7 +22,7 @@ public class insert_data {
 	private HashSet<String> hsGenre = new HashSet<String>();
 	private HashSet<String> hsDirectors = new HashSet<String>();
 	
-	public insert_data(DbBridge dbBridge) throws SQLException {
+	public DBHandler(DbBridge dbBridge) throws SQLException {
 		//using prepared statements to counter sql-injections
 		this.stateActors = dbBridge.dbConnection.prepareStatement("INSERT INTO Actors (ActorName) VALUES (?);");
 		this.stateGenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Genres (GenreName) VALUES (?);");
@@ -53,7 +53,7 @@ public class insert_data {
 		rs.close();
 	}
 	
-	public void import_data(String filename) {
+	public void import_csv(String filename) {
 		//maybe changed in the future to add filenames
 		
 		BufferedReader buffer = null;

@@ -32,14 +32,6 @@ public class DbBridge {
 		}
 	}
 	
-	public String getPort(){
-		return this.strPort;
-	}
-	
-	public String getServer(){
-		return this.strServer;
-	}
-	
 	/**
 	 * Connects to the database 
 	 * @return true, if connecting process was successfull

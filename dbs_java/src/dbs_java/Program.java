@@ -42,8 +42,8 @@ public class Program {
 		
 		// Import our data
 		try {
-			insert_data id = new insert_data(dbBridge);
-			id.import_data("./data/imdb_top100t_2015-06-18.csv");
+			DBHandler dbh = new DBHandler(dbBridge);
+			dbh.import_csv("./data/imdb_top100t_2015-06-18.csv");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
