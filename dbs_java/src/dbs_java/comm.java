@@ -11,12 +11,20 @@ public class comm {
 	private PreparedStatement GetActornameById;
 	private PreparedStatement SelectAllActorsNamesperFilm;
 	private PreparedStatement SelectNumberOfFilms;
+	private PreparedStatement SelectDirectors;
+	private DBHandler dbh;
+	
+	
+	
+	
 	
 	public comm (DBHandler dbh, DbBridge dbBridge) throws SQLException {
 		
 		this.SelectAllActorsNamesperFilm = dbBridge.dbConnection.prepareStatement("SELECT FilmId,ActorId FROM Filmcasts;");
 		this.GetActornameById = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors WHERE ActorId = ?;");
 		this.SelectNumberOfFilms = dbBridge.dbConnection.prepareStatement("SELECT count(FilmId) FROM Films;");
+		this.SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT DirId, DirName FROM Directors;");
+		this.dbh=dbh;
 		
 		this.obj = get_all_actors();
 		
@@ -32,7 +40,7 @@ public class comm {
 	
 	public String get_actorname_byid (int id) throws SQLException {
 		GetActornameById.setInt(1,id);
-		ResultSet res = getResults(GetActornameById);
+		ResultSet res = dbh.getResults(GetActornameById);
 		res.next();
 		return res.getString(1);
 	}
@@ -40,14 +48,14 @@ public class comm {
 	
 	private film[] get_all_actors() throws SQLException {
 	// Actornames
-		ResultSet res1 = getResults(SelectAllActorsNamesperFilm);
+		ResultSet res1 = dbh.getResults(SelectAllActorsNamesperFilm);
 		res1.next(); 
-		ResultSet res2 = getResults(SelectNumberOfFilms);
+		ResultSet res2 = dbh.getResults(SelectNumberOfFilms);
 		res2.next();
 		int numberoffilms = res2.getInt(1);
 		int filmid,actorid;
 		film[] films = new film[numberoffilms];
-		int i = 0;
+		int i = 1;
 		String[] nActors;
 		while(res1.next()) {
 			filmid = res1.getInt(i);
@@ -58,9 +66,9 @@ public class comm {
 			films[filmid].actors = nActors;
 			i++;
 		}
-	
-	
 		return films;
-}
-
+	}
+	
+	private lastratings (String)
+	
 }
