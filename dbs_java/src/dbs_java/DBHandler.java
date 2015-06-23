@@ -187,7 +187,7 @@ public class DBHandler {
 		return res.getString(1);
 	}
 	
-	public film[] get_all_actornames(DBHandler dbh) throws SQLException {
+	public film[] get_all_actornames() throws SQLException {
 		
 		// Actornames
 		ResultSet res1 = SelectAllActorsNamesperFilm.executeQuery();
