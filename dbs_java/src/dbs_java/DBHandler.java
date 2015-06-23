@@ -16,7 +16,10 @@ public class DBHandler {
 	private PreparedStatement stateFilmcasts;
 	private PreparedStatement SelectGenreId;
 	private PreparedStatement SelectActorId;
+	private PreparedStatement GetActornameById;
 	
+	private PreparedStatement SelectAllActorsNamesperFilm;
+	private PreparedStatement SelectNumberOfFilms;
 	//using HashSets to quickly find, if a Actor/Genre/Director is already in db when importing a film
 	private HashSet<String> hsActor = new HashSet<String>();
 	private HashSet<String> hsGenre = new HashSet<String>();
@@ -35,6 +38,10 @@ public class DBHandler {
 		PreparedStatement SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT Dirname FROM Directors;");
 		this.SelectGenreId = dbBridge.dbConnection.prepareStatement("SELECT GenreId FROM Genres WHERE GenreName=?;");
 		this.SelectActorId = dbBridge.dbConnection.prepareStatement("SELECT ActorId FROM Actors WHERE ActorName=?;");
+		
+		this.SelectAllActorsNamesperFilm = dbBridge.dbConnection.prepareStatement("SELECT FilmId,ActorId FROM Filmcasts;");
+		this.GetActornameById = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors WHERE ActorId = ?;");
+		this.SelectNumberOfFilms = dbBridge.dbConnection.prepareStatement("SELECT count(FilmId) FROM Films;");
 		
 		ResultSet rs = SelectActors.executeQuery();
 		while(rs.next()) {
@@ -172,4 +179,39 @@ public class DBHandler {
 			stateFilmcasts.execute();
 		}
 	}
+
+	public String get_actorname_byid (int id) throws SQLException {
+		GetActornameById.setInt(1,id);
+		ResultSet res = GetActornameById.executeQuery();
+		res.next();
+		return res.getString(1);
+	}
+	
+	public film[] get_all_actornames(DBHandler dbh) throws SQLException {
+		
+		// Actornames
+		ResultSet res1 = SelectAllActorsNamesperFilm.executeQuery();
+		res1.next(); 
+		ResultSet res2 = SelectNumberOfFilms.executeQuery();
+		res2.next();
+		int numberoffilms = res2.getInt(1);
+		int filmid,actorid;
+		film[] films = new film[numberoffilms];
+		int i = 0;
+		String[] nActors;
+		while(res1.next()) {
+			filmid = res1.getInt(i);
+			actorid = res1.getInt(i);
+			nActors = new String[films[filmid].actors.length+1];
+			System.arraycopy(films[filmid].actors, 0, nActors, 0, films[filmid].actors.length);
+			nActors[nActors.length] = get_actorname_byid(actorid);
+			films[filmid].actors = nActors;
+			i++;
+		}
+		
+		
+		return films;
+	}
+	
+	public film[] get_all_films
 }
