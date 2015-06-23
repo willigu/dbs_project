@@ -1,7 +1,6 @@
 package dbs_java;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -40,15 +39,24 @@ public class Program {
 		
 		dbBridge.connect();
 		
-		// Import our data
+		
+		
 		try {
+			DBHandler dbh = new DBHandler(dbBridge);
+			comm c = new comm(dbh, dbBridge);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Import our data
+		/*try {
 			DBHandler dbh = new DBHandler(dbBridge);
 			dbh.import_csv("./data/imdb_top100t_2015-06-18.csv");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 		
 		dbBridge.close();
 	}

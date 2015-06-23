@@ -11,11 +11,9 @@ public class comm {
 	private PreparedStatement GetActornameById;
 	private PreparedStatement SelectAllActorsNamesperFilm;
 	private PreparedStatement SelectNumberOfFilms;
-	private PreparedStatement SelectDirectors;
 	private PreparedStatement DirectorList;
 	private PreparedStatement lastratings;
 	private PreparedStatement difference;
-	private PreparedStatement Ratingcount;
 	private PreparedStatement allRatings;
 	private PreparedStatement neuesterFilmTitle;
 	private PreparedStatement neuesterFilmDir;
@@ -32,11 +30,9 @@ public class comm {
 		this.SelectAllActorsNamesperFilm = dbBridge.dbConnection.prepareStatement("SELECT FilmId,ActorId FROM Filmcasts;");
 		this.GetActornameById = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors WHERE ActorId = ?;");
 		this.SelectNumberOfFilms = dbBridge.dbConnection.prepareStatement("SELECT count(FilmId) FROM Films;");
-		this.SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT DirId, DirName FROM Directors;");
 		this.DirectorList = dbBridge.dbConnection.prepareStatement("SELECT DirId,DirName FROM Directors;");
 		this.lastratings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films WHERE Releaseyear = (SELECT ReleaseYear FROM Films ORDER BY ReleaseYear DESC LIMIT{3} WHERE DirId=?);");
 		this.difference = dbBridge.dbConnection.prepareStatement("SELECT RANGE(ReleaseYear) FROM Films WHERE DirId=?;");
-		this.Ratingcount = dbBridge.dbConnection.prepareStatement("SELECT count(Rating) FROM Films;");
 		this.allRatings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films ORDER BY ReleaseYear DESC LIMIT{5};");
 		this.neuesterFilmTitle = dbBridge.dbConnection.prepareStatement("SELECT Title FROM Films ORDER BY ReleaseYear DESC LIMIT{1};");
 		this.neuesterFilmDir = dbBridge.dbConnection.prepareStatement("SELECT DirName FROM Directors WHERE DirId=(SELECT DirId FROM Films ORDER BY ReleaseYear DESC LIMIT{1});");
