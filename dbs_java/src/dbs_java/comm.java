@@ -12,6 +12,9 @@ public class comm {
 	private PreparedStatement SelectAllActorsNamesperFilm;
 	private PreparedStatement SelectNumberOfFilms;
 	private PreparedStatement SelectDirectors;
+	private PreparedStatement DirectorList;
+	private PreparedStatement lastratings;
+	
 	private DBHandler dbh;
 	
 	
@@ -24,8 +27,10 @@ public class comm {
 		this.GetActornameById = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors WHERE ActorId = ?;");
 		this.SelectNumberOfFilms = dbBridge.dbConnection.prepareStatement("SELECT count(FilmId) FROM Films;");
 		this.SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT DirId, DirName FROM Directors;");
-		this.dbh=dbh;
+		this.DirectorList = dbBridge.dbConnection.prepareStatement("SELECT DirId,DirName FROM Directors;");
+		this.lastratings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films WHERE Releaseyear = (SELECT ReleaseYear FROM Films ORDER BY ReleaseYear DESC LIMIT{3} WHERE DirId=?);");
 		
+		this.dbh=dbh;
 		this.obj = get_all_actors();
 		
 		System.out.println("Das ist die erste Abfrage:Die ersten drei Hauptdarsteller der Filme");
@@ -34,8 +39,23 @@ public class comm {
 				System.out.println(obj[i].actors[j]);
 			}
 		}	
-		System.out.println("Das ist die zweite Abfrage: Bewertung der letzten drei Filme eines Regisseurs");
 		
+		System.out.println("Das ist die zweite Abfrage: Bewertung der letzten drei Filme eines Regisseurs");
+		ResultSet res = dbh.getResults(DirectorList); 
+		ResultSet res2;
+		int i=1;
+		int id;
+		String name;
+		float[] rating = new float[2];
+		while (res.next()) {
+			id = res.getInt(i);
+			name = res.getString(i);
+			System.out.println("Director: "+ name);
+			res2 = dbh.getResults(lastratings); 
+			System.out.println(rating[0]+","+rating[1]+","+rating[2]);
+		}
+		
+		System.out.println("Dast ist die dritte Abfrage:");
 	}
 	
 	public String get_actorname_byid (int id) throws SQLException {
