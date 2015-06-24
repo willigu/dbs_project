@@ -38,8 +38,16 @@ public class Program {
 		// customize bridge settings
 		
 		dbBridge.connect();
-		
-		
+		/*
+		// Import our data
+		try {
+			DBHandler dbh = new DBHandler(dbBridge);
+			dbh.import_csv("./data/imdb_top100_2015-06-18.csv");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/		
 		
 		try {
 			DBHandler dbh = new DBHandler(dbBridge);
@@ -48,15 +56,7 @@ public class Program {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// Import our data
-		/*try {
-			DBHandler dbh = new DBHandler(dbBridge);
-			dbh.import_csv("./data/imdb_top100t_2015-06-18.csv");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
+		
 		
 		dbBridge.close();
 	}

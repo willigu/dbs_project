@@ -127,7 +127,7 @@ public class comm {
 		while(res1.next()) {
 			filmid = res1.getInt(i);
 			actorid = res1.getInt(i);
-			nActors = new String[films[filmid].actors.length+1];
+			nActors = new String[(films[filmid].actors.length)+1];
 			System.arraycopy(films[filmid].actors, 0, nActors, 0, films[filmid].actors.length);
 			nActors[nActors.length] = get_actorname_byid(actorid);
 			films[filmid].actors = nActors;
