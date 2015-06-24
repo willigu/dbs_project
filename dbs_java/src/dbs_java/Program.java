@@ -38,7 +38,7 @@ public class Program {
 		// customize bridge settings
 		
 		dbBridge.connect();
-		/*
+		
 		// Import our data
 		try {
 			DBHandler dbh = new DBHandler(dbBridge);
@@ -47,7 +47,7 @@ public class Program {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/		
+				
 		
 		try {
 			DBHandler dbh = new DBHandler(dbBridge);
