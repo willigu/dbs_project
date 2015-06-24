@@ -16,6 +16,7 @@ public class DBHandler {
 	private PreparedStatement stateFilmcasts;
 	private PreparedStatement SelectGenreId;
 	private PreparedStatement SelectActorId;
+	private PreparedStatement SelectDirIdByName;
 	
 	//using HashSets to quickly find, if a Actor/Genre/Director is already in db when importing a film
 	private HashSet<String> hsActor = new HashSet<String>();
@@ -26,8 +27,8 @@ public class DBHandler {
 		//using prepared statements to counter sql-injections
 		this.stateActors = dbBridge.dbConnection.prepareStatement("INSERT INTO Actors (ActorName) VALUES (?);");
 		this.stateGenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Genres (GenreName) VALUES (?);");
-		this.stateDirectors = dbBridge.dbConnection.prepareStatement("INSERT INTO Directors (DirName) VALUES (?);");
-		this.stateFilms = dbBridge.dbConnection.prepareStatement("INSERT INTO Films (FilmTitle, ReleaseYear, Rating, Length) VALUES (?,?,?,?) RETURNING FilmId;");
+		this.stateDirectors = dbBridge.dbConnection.prepareStatement("INSERT INTO Directors (DirName) VALUES (?) RETURNING DirId;");
+		this.stateFilms = dbBridge.dbConnection.prepareStatement("INSERT INTO Films (FilmTitle, ReleaseYear, Rating, Length, DirId) VALUES (?,?,?,?,?) RETURNING FilmId;");
 		this.stateFilmgenres = dbBridge.dbConnection.prepareStatement("INSERT INTO Filmgenres (FilmId,GenreId) VALUES (?,?);");
 		this.stateFilmcasts = dbBridge.dbConnection.prepareStatement("INSERT INTO Filmcasts (FilmId,ActorId) VALUES (?,?);"); 
 		PreparedStatement SelectActors = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors;");
@@ -35,6 +36,7 @@ public class DBHandler {
 		PreparedStatement SelectDirectors = dbBridge.dbConnection.prepareStatement("SELECT Dirname FROM Directors;");
 		this.SelectGenreId = dbBridge.dbConnection.prepareStatement("SELECT GenreId FROM Genres WHERE GenreName=?;");
 		this.SelectActorId = dbBridge.dbConnection.prepareStatement("SELECT ActorId FROM Actors WHERE ActorName=?;");
+		this.SelectDirIdByName = dbBridge.dbConnection.prepareStatement("SELECT DirId FROM Directors WHERE DirName=?;");
 		
 		ResultSet rs = SelectActors.executeQuery();
 		while(rs.next()) {
@@ -77,7 +79,7 @@ public class DBHandler {
 					genre_import(Genre);
 				}
 				
-				directors_import(film[6]);
+				f.dirid = directors_import(film[6]);
 				
 				film_import(f);
 			}
@@ -122,14 +124,19 @@ public class DBHandler {
 		return false;
 	}
 	
-	public boolean directors_import(String Director) throws SQLException {
+	public int directors_import(String Director) throws SQLException {
 		if (!hsDirectors.contains(Director)) {
 			hsDirectors.add(Director);
 			stateDirectors.setString(1, Director);
-			stateDirectors.execute();
-			return true;
+			ResultSet res = stateDirectors.executeQuery();
+			res.next();
+			return res.getInt(1);
+		} else {
+			SelectDirIdByName.setString(1,Director);
+			ResultSet res = SelectDirIdByName.executeQuery();
+			res.next();
+			return res.getInt(1);
 		}
-		return false;
 	}
 	
 	public void film_import(film f) throws SQLException {
@@ -138,6 +145,7 @@ public class DBHandler {
 		stateFilms.setInt(2,f.year);
 		stateFilms.setFloat(3,f.rating);
 		stateFilms.setInt(4,f.length);
+		stateFilms.setInt(5, f.dirid);
 		ResultSet res = stateFilms.executeQuery();
 		res.next();
 		f.id = res.getInt(1);

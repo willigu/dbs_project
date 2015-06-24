@@ -18,12 +18,9 @@ public class comm {
 	private PreparedStatement neuesterFilmTitle;
 	private PreparedStatement neuesterFilmDir;
 	private PreparedStatement bestesrating;
+	private PreparedStatement selrelyear;
 	
 	private DBHandler dbh;
-	
-	
-	
-	
 	
 	public comm (DBHandler dbh, DbBridge dbBridge) throws SQLException {
 		
@@ -31,12 +28,13 @@ public class comm {
 		this.GetActornameById = dbBridge.dbConnection.prepareStatement("SELECT ActorName FROM Actors WHERE ActorId = ?;");
 		this.SelectNumberOfFilms = dbBridge.dbConnection.prepareStatement("SELECT count(FilmId) FROM Films;");
 		this.DirectorList = dbBridge.dbConnection.prepareStatement("SELECT DirId,DirName FROM Directors;");
-		this.lastratings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films WHERE Releaseyear = (SELECT ReleaseYear FROM Films WHERE DirId=? ORDER BY ReleaseYear DESC LIMIT 3);");
-		this.difference = dbBridge.dbConnection.prepareStatement("SELECT RANGE(ReleaseYear) FROM Films WHERE DirId=?;");
-		this.allRatings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films ORDER BY ReleaseYear DESC LIMIT{5};");
-		this.neuesterFilmTitle = dbBridge.dbConnection.prepareStatement("SELECT Title FROM Films ORDER BY ReleaseYear DESC LIMIT{1};");
-		this.neuesterFilmDir = dbBridge.dbConnection.prepareStatement("SELECT DirName FROM Directors WHERE DirId=(SELECT DirId FROM Films ORDER BY ReleaseYear DESC LIMIT{1});");
-		this.bestesrating = dbBridge.dbConnection.prepareStatement("SELECT Title FROM (SELECT MAX(Rating),Title FROM Films);");
+		this.lastratings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films WHERE Releaseyear = ?;");
+		this.selrelyear =  dbBridge.dbConnection.prepareStatement("SELECT ReleaseYear FROM Films WHERE DirId=? ORDER BY ReleaseYear DESC LIMIT 3;");
+		this.difference = dbBridge.dbConnection.prepareStatement("SELECT (MAX(ReleaseYear) - MIN(ReleaseYear)) FROM Films WHERE DirId=?;");
+		this.allRatings = dbBridge.dbConnection.prepareStatement("SELECT Rating FROM Films ORDER BY ReleaseYear DESC LIMIT 5;");
+		this.neuesterFilmTitle = dbBridge.dbConnection.prepareStatement("SELECT FilmTitle FROM Films ORDER BY ReleaseYear DESC LIMIT 1;");
+		this.neuesterFilmDir = dbBridge.dbConnection.prepareStatement("SELECT DirName FROM Directors WHERE DirId=(SELECT DirId FROM Films ORDER BY ReleaseYear DESC LIMIT 1);");
+		this.bestesrating = dbBridge.dbConnection.prepareStatement("SELECT FilmTitle FROM Films WHERE Rating=(SELECT MAX(Rating) FROM Films);");
 		
 		this.dbh=dbh;
 		this.obj = get_all_actors();
@@ -53,20 +51,32 @@ public class comm {
 		
 		System.out.println("Das ist die zweite Abfrage: Bewertung der letzten drei Filme eines Regisseurs");
 		ResultSet res = dbh.getResults(DirectorList); 
-		ResultSet res2;
+		ResultSet res2,res3;
 		int id;
 		String name;
-		float[] rating = new float[2];
+		float[] rating = new float[3];
+		int fid;
 		while (res.next()) {
 			id = res.getInt(1);
 			name = res.getString(2);
 			System.out.println("Director: "+ name);
-			lastratings.setInt(1, id);
-			res2 = dbh.getResults(lastratings);
-			rating[0] = res2.getFloat(1); //DANGER: if a director has less than 3 ratings -> kaboom
-			rating[1] = res2.getFloat(2);
-			rating[2] = res2.getFloat(3);
-			System.out.println(rating[0]+","+rating[1]+","+rating[2]);
+			selrelyear.setInt(1,id);
+			res3 = selrelyear.executeQuery();
+			for (int k=0; k<3;k++) {
+				if (res3.next()) {
+					fid = res3.getInt(1);
+					lastratings.setInt(1, fid);
+					res2 = dbh.getResults(lastratings);
+					res2.next();
+					rating[k] = res2.getFloat(1); //DANGER: if a director has less than 3 ratings -> kaboom
+				}
+				
+			}
+			if (rating.length<3) {
+				System.out.println("Nicht genug Daten");
+			} else{
+				System.out.println(rating[0]+","+rating[1]+","+rating[2]);
+			}
 		}
 		
 		System.out.println("Dast ist die dritte Abfrage: Abstand der Filme in Jahren eines Regisseurs");
@@ -77,31 +87,37 @@ public class comm {
 			System.out.println("Director: "+ name);
 			difference.setInt(1,id);
 			res2 = dbh.getResults(difference);
+			res2.next();
 			System.out.println(res2.getInt(1));
 		}
 		
 		System.out.println("Das ist die vierte Abfrage: Durchschnittliche Steigung der Bewertungen der letzten fünf Filme");
 		res = dbh.getResults(allRatings);
-		float[] fiveratings = new float[4];
+		res.next();
+		float[] fiveratings = new float[5];
 		int rcount=0;
-		while (res.next()) {
+		while ((res.next())&&rcount<5) {
 			fiveratings[rcount] = res.getFloat(1);
+			rcount++;
 		}
 		float steigung = ((fiveratings[4] - fiveratings[3]) + (fiveratings[3] - fiveratings[2]) + (fiveratings[2] - fiveratings[1]) + (fiveratings[1] - fiveratings[0]))/5;
 		System.out.println("Die durchschnittliche Steigung der letzten 5 Ratings ist: "+ steigung);
 		
 		System.out.println("Das ist die erste zusätzliche Abfrage: Wie heißt der neueste Film?");
 		res = dbh.getResults(neuesterFilmTitle);
+		res.next();
 		name = res.getString(1);
 		System.out.println("Der neueste Film heißt: "+name);
 		
 		System.out.println("Das ist die zweite zusätzliche Abfrage: Wie heißt der Director des neuesten Films?");
 		res = dbh.getResults(neuesterFilmDir);
+		res.next();
 		name = res.getString(1);
 		System.out.println("Der Director des neuesten Films heißt: "+ name);
 		
 		System.out.println("Das ist die dritte zusätzliche Abfrage: Wie heißt der Film mit dem höchsten Rating?");
 		res = dbh.getResults(bestesrating);
+		res.next();
 		name = res.getString(1);
 		System.out.println("Ein Film mit dem höchsten Rating heißt: "+ name);
 	}
