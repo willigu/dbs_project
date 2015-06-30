@@ -7,32 +7,31 @@ CREATE TABLE IF NOT EXISTS Actors (
 ;
 
 
-CREATE TABLE IF NOT EXISTS Directors (
+CREATE TABLE Directors (
 	DirId SERIAL NOT NULL PRIMARY KEY,
 	DirName varchar(50) NOT NULL
 	)
 ;
 
 
-CREATE TABLE IF NOT EXISTS Films (
+CREATE TABLE Films (
 	FilmId SERIAL NOT NULL PRIMARY KEY,
 	FilmTitle varchar(255) NOT NULL,
 	ReleaseYear integer NULL DEFAULT NULL,
 	Rating numeric,
-	Length integer,
-	DirId integer REFERENCES Directors
+	Length integer
 	)
 ;
 
 
-CREATE TABLE IF NOT EXISTS Genres (
+CREATE TABLE Genres (
 	GenreId SERIAL NOT NULL PRIMARY KEY,
 	GenreName varchar(128) NOT NULL
 	)
 ;
 
 
-CREATE TABLE IF NOT EXISTS Filmgenres (
+CREATE TABLE FilmGenres (
 	EntryId SERIAL NOT NULL PRIMARY KEY,
 	FilmId integer NOT NULL REFERENCES Films,
 	GenreId integer NOT NULL REFERENCES Genres
@@ -40,9 +39,16 @@ CREATE TABLE IF NOT EXISTS Filmgenres (
 ;
 
 
-CREATE TABLE IF NOT EXISTS Filmcasts (
+CREATE TABLE Filmcasts (
 	EntryId SERIAL NOT NULL PRIMARY KEY,
 	FilmId integer NOT NULL REFERENCES Films,
 	ActorId integer NOT NULL REFERENCES Actors
+	)
+;
+
+CREATE TABLE FilmDirectors (
+	EntryId SERIAL NOT NULL PRIMARY KEY,
+	FilmId integer NOT NULL REFERENCES Films,
+	DirId integer NOT NULL REFERENCES Directors
 	)
 ;

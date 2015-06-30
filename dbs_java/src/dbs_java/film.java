@@ -6,7 +6,6 @@ public class film {
 	public float rating;
 	public int length;
 	public String director;
-	public int dirid;
 	public String[] actors;
 	public String[] genres;
 	public int id;
