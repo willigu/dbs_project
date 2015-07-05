@@ -21,7 +21,7 @@ public class DbBridge
 {
    private String strServer, strPort, strDBName;
    private String strUsername, strPwd;
-   private Connection dbConnection;
+   Connection dbConnection;
    /**
     * Do INSERT without any additional options
     */
